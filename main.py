@@ -1,6 +1,9 @@
 from collections import UserDict
 from datetime import datetime, date, timedelta
 from typing import List, Dict, Any, Optional, Tuple
+import pickle
+
+ADDRESSBOOK_FILENAME = "addressbook.pkl"
 
 
 class Field:
@@ -255,8 +258,22 @@ def display_upcoming_birthdays(upcoming_birthdays: List[Dict[str, Any]], days: i
         )
 
 
+def save_data(book, filename=ADDRESSBOOK_FILENAME):
+    with open(filename, "wb") as f:
+        # noinspection PyTypeChecker
+        pickle.dump(book, f)
+
+
+def load_data(filename=ADDRESSBOOK_FILENAME):
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return AddressBook()
+
+
 def main():
-    book = AddressBook()
+    book = load_data()
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ")
@@ -334,6 +351,7 @@ def main():
             display_upcoming_birthdays(upcoming_birthdays, days)
         else:
             print("Invalid command.")
+    save_data(book)
 
 
 if __name__ == "__main__":
